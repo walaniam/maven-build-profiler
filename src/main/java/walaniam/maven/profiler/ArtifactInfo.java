@@ -29,6 +29,10 @@ public class ArtifactInfo {
         this.type = metadata.getType();
     }
 
+    public String getKey() {
+        return String.format("%s:%s:%s::%s", groupId, artifactId, version, extension);
+    }
+
     public String getGroupId() {
         return groupId;
     }

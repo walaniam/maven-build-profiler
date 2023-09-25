@@ -3,17 +3,24 @@ package walaniam.maven.profiler;
 import com.soebes.maven.extensions.BuildTimeProfiler;
 import org.apache.maven.execution.MavenExecutionResult;
 import org.eclipse.aether.RepositoryEvent;
+import org.eclipse.aether.repository.ArtifactRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Named
 @Singleton
 public class MavenBuildProfiler extends BuildTimeProfiler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuildTimeProfiler.class);
+    private static final Logger log = LoggerFactory.getLogger(MavenBuildProfiler.class);
+
+    private final Map<RepositoryInfo, List<ArtifactInfo>> downloaded = new HashMap<>();
 
     @Override
     public void onEvent(Object event) throws Exception {
@@ -26,51 +33,39 @@ public class MavenBuildProfiler extends BuildTimeProfiler {
     }
 
     private void onExecutionResultEvent(MavenExecutionResult event) {
-        LOGGER.debug("Handling execution result event: {}", event);
+        log.debug("Handling execution result event: {}", event);
+        log.info("------------------------------------------------------------------------");
+        log.info("Artifact Download Sources");
+        downloaded.keySet().forEach(repositoryInfo -> {
+            log.info("Repository: {}", repositoryInfo.getKey());
+            downloaded.get(repositoryInfo).stream()
+                .map(ArtifactInfo::getKey)
+                .map(it -> " " + it)
+                .forEach(log::info);
+        });
     }
 
-    private void onRepositoryEvent(RepositoryEvent repositoryEvent) {
-        LOGGER.debug("Handling repository event: {}", repositoryEvent);
-        RepositoryEvent.EventType type = repositoryEvent.getType();
+    private void onRepositoryEvent(RepositoryEvent event) {
+        log.debug("Handling repository event: {}", event);
+        RepositoryEvent.EventType type = event.getType();
         switch (type) {
-            case ARTIFACT_DOWNLOADING:
-                break;
             case ARTIFACT_DOWNLOADED:
-                break;
-            case ARTIFACT_DEPLOYING:
-                break;
-            case ARTIFACT_DEPLOYED:
-                break;
-            case ARTIFACT_INSTALLING:
-                break;
-            case ARTIFACT_INSTALLED:
-                break;
-            case METADATA_DEPLOYING:
-                break;
-            case METADATA_DEPLOYED:
-                break;
-            case METADATA_DOWNLOADING:
+                handleDownloaded(event.getRepository(), new ArtifactInfo(event.getArtifact()));
                 break;
             case METADATA_DOWNLOADED:
+                handleDownloaded(event.getRepository(), new ArtifactInfo(event.getMetadata()));
                 break;
-            case METADATA_INSTALLING:
-                break;
-            case METADATA_INSTALLED:
-                break;
-
-            case ARTIFACT_RESOLVING:
-            case ARTIFACT_RESOLVED:
-            case ARTIFACT_DESCRIPTOR_INVALID:
-            case ARTIFACT_DESCRIPTOR_MISSING:
-            case METADATA_RESOLVED:
-            case METADATA_RESOLVING:
-            case METADATA_INVALID:
-                // Those events are not recorded.
-                break;
-
             default:
-                LOGGER.warn("onRepositoryEvent {}", type);
+                log.debug("onRepositoryEvent {}", type);
                 break;
         }
+    }
+
+    private synchronized void handleDownloaded(ArtifactRepository repository,
+                                               ArtifactInfo artifactInfo) {
+        List<ArtifactInfo> artifacts = downloaded.computeIfAbsent(
+            new RepositoryInfo(repository), ignore -> new ArrayList<>()
+        );
+        artifacts.add(artifactInfo);
     }
 }
