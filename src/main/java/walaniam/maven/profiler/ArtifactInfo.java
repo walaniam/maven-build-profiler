@@ -13,6 +13,7 @@ public class ArtifactInfo {
     private String classifier;
     private String extension;
     private String type;
+    private long size;
 
     public ArtifactInfo(Artifact artifact) {
         this.groupId = artifact.getGroupId();
@@ -20,6 +21,9 @@ public class ArtifactInfo {
         this.version = artifact.getVersion();
         this.classifier = artifact.getClassifier();
         this.extension = artifact.getExtension();
+        if (artifact.getFile() != null) {
+            size = artifact.getFile().length();
+        }
     }
 
     public ArtifactInfo(Metadata metadata) {
@@ -27,6 +31,9 @@ public class ArtifactInfo {
         this.artifactId = metadata.getArtifactId();
         this.version = metadata.getVersion();
         this.type = metadata.getType();
+        if (metadata.getFile() != null) {
+            size = metadata.getFile().length();
+        }
     }
 
     public String getKey() {
@@ -55,6 +62,10 @@ public class ArtifactInfo {
 
     public String getType() {
         return type;
+    }
+
+    public long getSize() {
+        return size;
     }
 
     @Override

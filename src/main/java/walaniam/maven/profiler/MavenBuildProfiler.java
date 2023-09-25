@@ -37,7 +37,11 @@ public class MavenBuildProfiler extends BuildTimeProfiler {
         log.info("------------------------------------------------------------------------");
         log.info("Artifact Download Sources");
         downloaded.keySet().forEach(repositoryInfo -> {
-            log.info("Repository: {}", repositoryInfo.getKey());
+            long totalBytesDownloaded = downloaded.get(repositoryInfo).stream()
+                .map(ArtifactInfo::getSize)
+                .reduce((a, b) -> a + b)
+                .orElse(0L);
+            log.info("Repository: {}, total download: {}", repositoryInfo.getKey(), sizeLabel(totalBytesDownloaded));
             downloaded.get(repositoryInfo).stream()
                 .map(ArtifactInfo::getKey)
                 .map(it -> " " + it)
@@ -67,5 +71,15 @@ public class MavenBuildProfiler extends BuildTimeProfiler {
             new RepositoryInfo(repository), ignore -> new ArrayList<>()
         );
         artifacts.add(artifactInfo);
+    }
+
+    private static String sizeLabel(long bytes) {
+        if (bytes < 10_000) {
+            return bytes + " bytes";
+        } else if (bytes < 2_000_000) {
+            return (bytes / 1024L) + " kB";
+        } else {
+            return (bytes / 1024L / 1024L) + " MB";
+        }
     }
 }
