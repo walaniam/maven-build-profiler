@@ -7,6 +7,14 @@
     <artifactId>maven-build-profiler</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Maven Build Profiler</name>
+    <description>Allows profiling Maven builds (additions to https://github.com/khmarbaise/maven-buildtime-profiler)</description>
+    <url>https://github.com/walaniam/maven-build-profiler</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/walaniam/maven-build-profiler/blob/main/LICENSE</url>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +36,17 @@
     <scm>
         <connection>scm:git:git://github.com/walaniam/maven-build-profiler.git</connection>
         <developerConnection>scm:git:ssh://github.com/walaniam/maven-build-profiler.git</developerConnection>
+        <url>https://github.com/walaniam/maven-build-profiler</url>
     </scm>
+
+    <developers>
+        <developer>
+            <id>walaniam</id>
+            <name>Mariusz Walania</name>
+            <url>https://github.com/walaniam</url>
+            <email>mariusz.walania@int.pl</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -104,7 +122,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
