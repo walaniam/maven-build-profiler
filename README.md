@@ -1,5 +1,21 @@
 # maven-build-profiler
-## Deployment
+## About
+Maven Build Profiler, built on top of https://github.com/khmarbaise/maven-buildtime-profiler/releases/tag/maven-buildtime-profiler-0.2.0
+
+## How to use it
+In your project create `.mvn/extensions.xml` file with contents:
+```xml
+<extensions xmlns="http://maven.apache.org/EXTENSIONS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/EXTENSIONS/1.0.0 http://maven.apache.org/xsd/core-extensions-1.0.0.xsd">
+  <extension>
+    <groupId>io.github.walaniam</groupId>
+    <artifactId>maven-build-profiler</artifactId>
+    <version>0.0.1</version>
+  </extension>
+</extensions>
+```
+
+## For developers
 ### Snapshot
 https://central.sonatype.org/publish/publish-maven/#performing-a-snapshot-deployment
 ### Release
